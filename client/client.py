@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 import requests
 import argparse
-from config import port, host
-#def if_logged():
-#    return bool(requests.get('http://127.0.0.1:50000/if_logged'))
+from client.config import port, host
 
 
 def login(subs):
