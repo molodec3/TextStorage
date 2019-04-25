@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TextStorage</title>
+</head>
+<body>
+    You can :
+    <form action="/list_tags" method="get">
+        <button type="submit">List All Tags</button>
+    </form>
+
+    <form action="/list_texts_by_tag" method="get">
+        <input required name="required_tag" type="text">
+        <button type="submit">Write Tag to List All The Texts By That Tag</button>
+    </form>
+
+    <form action="/make_own_text" method="post">
+        <b>Choose Tag</b>
+        <input required name="new_tag" type="text">
+        <b>Type text</b>
+        <input required name="new_text" type="text">
+        <button type="submit">Post New Text</button>
+    </form>
+</body>
+</html>
