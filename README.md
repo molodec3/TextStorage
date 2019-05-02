@@ -1,6 +1,8 @@
+
 * login --login [login] --password [password] ---- to login
 * all-tags ---- to list all tags
 * txt-by-tag --tag [tag] ---- list texts by tags
-* make-text --new-tag [tag] --new-text [text] ---- to make new text
+* get-text --id [id] ---- get text by id
+* make-text --new-tag [tag] --title [title] --text-file [text-file] ---- upload text file with given title and tag to server
 
-без бд работает плохо =(
+Чтоб заработало, надо запустить бд с параметрами в db_config
