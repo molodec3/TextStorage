@@ -1,4 +1,5 @@
 from peewee import *
+import os
 from db_config import db_name, db_user, db_password, db_host
 
 db = PostgresqlDatabase(database=db_name, user=db_user, password=db_password, host=db_host)
@@ -7,7 +8,6 @@ db = PostgresqlDatabase(database=db_name, user=db_user, password=db_password, ho
 class Logins(Model):
     login = CharField(primary_key=True)
     password = CharField()
-    texts_added = IntegerField()
 
     class Meta:
         database = db
@@ -32,7 +32,7 @@ class TextStorage:
         :param password: str
         :return:
         """
-        new_login = Logins.create(login=login, password=password, text_added=0)
+        new_login = Logins.create(login=login, password=password)
         new_login.save()
 
     def get_logins(self):
@@ -76,13 +76,10 @@ class TextStorage:
         :param current_id: int
         :return: text by id
         """
-        try:
-            Texts.select(Texts.tag).where(Texts.id == current_id).get()
-            f = open(current_id, 'r')
-            text = f.read()
-            return text
-        except IndexError:
-            return 'No texts with that id'
+        if int(current_id) <= Texts.select(fn.MAX(Texts.id)).scalar():
+            return os.path.join(os.getcwd(), str(current_id))
+        else:
+            return 400
 
     def make_text(self, title, text, tag, owner):
         """
@@ -93,15 +90,7 @@ class TextStorage:
         :param owner: str
         :return:
         """
-        count = Logins.select().where(Logins.login == owner).get()
-        user = Logins.update(texts_added=count.texts_added + 1).where(Logins.login == owner)
-        user.execute()
-        new_text = Texts.create(text_title=title, text_made='tmp', tag=tag, owner=owner)
-        new_text.save()
-        new_text = Texts.select().where(Texts.text_made == 'tmp').get()
-        current_id = new_text.id
-        f = open(str(current_id), 'w')
-        f.write(text)
-        f.close()
-        new_text = Texts.update(text_made=current_id).where(Texts.text_made == 'tmp')
+        current_id = Texts.insert(text_title=title, tag=tag, owner=owner).execute()
+        text.save(os.path.join(os.getcwd(), str(current_id)))
+        new_text = Texts.update(text_made=current_id).where(Texts.id == current_id)
         new_text.execute()

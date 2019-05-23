@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import flask
+import os
 from config import port, host
 import textStorage
 
@@ -27,7 +28,7 @@ def logging():
             app.textStorage.active_login = str(flask.request.form['login'])
             return 'OK'
         else:
-            return 'Wrong Password'
+            return flask.abort(400)
     else:
         app.textStorage.add_login(flask.request.form['login'], flask.request.form['password'])
         return 'New Account Was Made'
@@ -48,15 +49,18 @@ def list_text_by_tag():
 
 @app.route('/make_own_text', methods=['POST'])
 def make_own_text():
-    app.textStorage.make_text(flask.request.form['title'], flask.request.form['text_file'],
+    app.textStorage.make_text(flask.request.form['title'], flask.request.files['upload_file'],
                               flask.request.form['tag'], flask.request.form['login'])
     return 'New Text Was Added'
 
 
 @app.route('/get_text', methods=['GET'])
 def get_text():
-    print(flask.request.args['required_id'])
-    return app.textStorage.get_text(flask.request.args['required_id'])
+    text = app.textStorage.get_text(flask.request.args['required_id'])
+    if text == 400:
+        return flask.abort(400)
+    else:
+        return flask.send_file(app.textStorage.get_text(flask.request.args['required_id']))
 
 
 def main():
